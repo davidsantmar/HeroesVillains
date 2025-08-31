@@ -4,7 +4,6 @@ import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import { Audio } from 'expo-audio';
 
-
 export default function Victory() {
   const router = useRouter();
   const params = useLocalSearchParams();
