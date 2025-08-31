@@ -2,6 +2,8 @@ import { View, Text, Image, StyleSheet, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
+import { Audio } from 'expo-audio';
+
 
 export default function Victory() {
   const router = useRouter();
@@ -11,9 +13,45 @@ export default function Victory() {
     'Orbitron-Medium': require('../assets/fonts/Orbitron-Medium.ttf'), 
   });     
   const parsedCharacter = character ? JSON.parse(character) : null;
-  const [sound, setSound] = useState(null);
+  const [draw, setDraw] = useState(null);
+  useEffect(() => {
+      Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        shouldDuckAndroid: true,
+      });
   
+      // Liberación de sonidos al desmontar el componente
+      return () => {
+        if (draw) {
+          console.log("Liberando draw");
+          draw.unloadAsync();
+        }
+      };
+    }, [draw]);
+   async function playDraw() {
+      console.log("Cargando draw");
+      try {
+        if (draw) {
+          // Si el sonido ya está cargado, reutilízalo
+          console.log("Reproduciendo draw existente");
+          await draw.replayAsync(); // replayAsync reinicia y reproduce el sonido
+          return;
+        }
+  
+        const { sound } = await Audio.Sound.createAsync(
+          require("../assets/sounds/draw.mp3")
+        );
+        setDraw(sound);
+        console.log("Reproduciendo draw");
+        await sound.playAsync();
+      } catch (error) {
+        console.error("Error al reproducir draw:", error);
+      }
+    }
   const toHome = () => {
+    playDraw();
     router.push({
         pathname: '/',
       });
@@ -45,7 +83,10 @@ export default function Victory() {
           </View>
           <View style={styles.victory_container}>
             <Text style={styles.victory_text}>
-              WINNER OF HEROES & VILLAINS
+              SAVED THE WORLD FROM DESTRUCTION! 
+            </Text>
+            <Text style={styles.victory_text}>
+               At least, this time...
             </Text>
           </View>
         
@@ -72,14 +113,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   victory_text_name: {
-    fontSize: 24,
+    fontSize: 20,
     color: 'white',
     textShadowColor: 'black',
     marginTop: 20,
     fontFamily: 'Orbitron-Medium',
   },
   victory_text: {
-    fontSize: 20,
+    fontSize: 15,
     color: 'white',
     textShadowColor: 'black',
     marginTop: 20,

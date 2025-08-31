@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { VersusScore } from '../components/VersusScore';
 import { getCharacterOfTheDay } from '../data/data';
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { Audio } from "expo-av";
 
 export default function BattleArena() {
   const router = useRouter();
@@ -26,20 +27,22 @@ export default function BattleArena() {
   const [loaded, error] = useFonts({
     'Orbitron-Medium': require('../assets/fonts/Orbitron-Medium.ttf'), 
   });
-  const [avengers, setAvengers] = useState(null);
-  const [lose, setLose] = useState(null);
   const [youWin, setYouWin] = useState(null);
   const [youLose, setYouLose] = useState(null);
-  const [draw, setDraw] = useState(null);
-  
+  const [perfect, setPerfect] = useState(null);
+  const [avengers, setAvengers] = useState(null);
+  const [lose, setLose] = useState(null);
   useEffect(() => {
-    if (charScore === 1 && enemyScore === 0){
+    if (charScore === 12 && enemyScore === 0){
         router.push({
           pathname: "/victory",
           params: { character: JSON.stringify(characterToShow)}
         })
+        playPerfect();
     }
-    //playAvengers();
+    if (charScore === 1) {
+      playAvengers();
+    }
   }, [charScore]);
   useEffect(() => {
     const parsedCharacter = typeof character === "string" ? JSON.parse(character) : character;
@@ -53,6 +56,131 @@ export default function BattleArena() {
       setTimeout(battle, 5);
     }
   }, [characterToShow, enemyToShow, battle]);
+  /*useEffect(() => {
+      Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        shouldDuckAndroid: true,
+      });
+  
+      // Liberación de sonidos al desmontar el componente
+      return () => {
+        
+        if (youWin) {
+          console.log("Liberando youWin");
+          youWin.unloadAsync();
+        }
+        if (youLose) {
+          console.log("Liberando youLose");
+          youLose.unloadAsync();
+        }
+        if (lose) {
+          console.log("Liberando lose");
+          lose.unloadAsync();
+        }
+      };
+    }, [youWin, youLose, lose]);*/
+ async function playAvengers() {
+    console.log("Cargando avengers");
+    try {
+      if (avengers) {
+        // Si el sonido ya está cargado, reutilízalo
+        console.log("Reproduciendo avengers existente");
+        await avengers.replayAsync(); // replayAsync reinicia y reproduce el sonido
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/sounds/avengers.mp3")
+      );
+      setAvengers(sound);
+      console.log("Reproduciendo avengers");
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Error al reproducir avengers:", error);
+    }
+  }
+ async function playYouWin() {
+    console.log("Cargando youWin");
+    try {
+      if (youWin) {
+        // Si el sonido ya está cargado, reutilízalo
+        console.log("Reproduciendo youWin existente");
+        await youWin.replayAsync();
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/sounds/you-win.mp3")
+      );
+      setYouWin(sound);
+      console.log("Reproduciendo youWin");
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Error al reproducir youWin:", error);
+    }
+  }
+  async function playYouLose() {
+    console.log("Cargando youLose");
+    try {
+      if (youLose) {
+        // Si el sonido ya está cargado, reutilízalo
+        console.log("Reproduciendo youLose existente");
+        await youLose.replayAsync();
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/sounds/you-lose.mp3")
+      );
+      setYouLose(sound);
+      console.log("Reproduciendo youLose");
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Error al reproducir youLose:", error);
+    }
+  }
+  async function playPerfect() {
+    console.log("Cargando perfect");
+    try {
+      if (perfect) {
+        // Si el sonido ya está cargado, reutilízalo
+        console.log("Reproduciendo perfect existente");
+        await perfect.replayAsync();
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/sounds/you-win-perfect.mp3")
+      );
+      setPerfect(sound);
+      console.log("Reproduciendo perfect");
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Error al reproducir perfect:", error);
+    }
+  }
+  async function playLose() {
+      console.log("Cargando lose");
+      try {
+        if (lose) {
+          // Si el sonido ya está cargado, reutilízalo
+          console.log("Reproduciendo lose existente");
+          await lose.replayAsync(); // replayAsync reinicia y reproduce el sonido
+          return;
+        }
+  
+        const { sound } = await Audio.Sound.createAsync(
+          require("../assets/sounds/lose.mp3")
+        );
+        setLose(sound);
+        console.log("Reproduciendo lose");
+        await sound.playAsync();
+      } catch (error) {
+        console.error("Error al reproducir lose:", error);
+      }
+    }
   const loadEnemy = async () => {
       try {
           const result = await getCharacterOfTheDay();
@@ -63,7 +191,6 @@ export default function BattleArena() {
       Alert.alert("Error", "Failed to load character");
       }
   };    
-  
   const fixUnknownStats = (char, friendOrFoe) => {
     // Defensive check for invalid input
     if (!char || !char.powerstats) {
@@ -170,12 +297,12 @@ export default function BattleArena() {
               setWinChar('loser');
               setWinEnemy('winner');
               setEnemyScore(enemyScorePoints += 1);
-              //setTimeout(playYouLose, 2000);
+              setTimeout(playYouLose, 1000);
             } else if (charPoints < enemyPoints){
               setWinEnemy('loser');
               setWinChar('winner'); 
               setCharScore(charScorePoints += 1);
-              //&setTimeout(playYouWin, 2000);
+              setTimeout(playYouWin, 1000);
             }else{
               //setTimeout(playDraw, 2000);
             }
@@ -183,7 +310,21 @@ export default function BattleArena() {
         }, index * 200); 
       });
     }, [characterToShow, enemyToShow]);
+    async function stopAvengers() {
+      if (avengers) {
+        console.log('Deteniendo avengers...');
+        try {
+          await avengers.stopAsync();
+          console.log('Avengers detenido correctamente');
+        } catch (error) {
+          console.log('Error al detener el avengers:', error);
+        }
+      } else {
+        console.log('No hay avengers cargado para detener');
+      }
+    }
   const toFightersSearched = () => {
+      stopAvengers();
       playLose();
       router.push({
         pathname: '/fightersSearched',
@@ -257,10 +398,9 @@ const styles = StyleSheet.create({
   },
   characters_card_container: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
   },
   card_container: {
-    padding: 15,
+    padding: 10,
     backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
@@ -272,7 +412,7 @@ const styles = StyleSheet.create({
     marginTop: 20, 
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 30,
+    paddingHorizontal: 15,
   },
   score_container: {
     alignItems: 'center',
@@ -280,13 +420,12 @@ const styles = StyleSheet.create({
   score_text: {
     color: 'white',
     fontFamily: 'Orbitron-Medium',
-    fontSize: 14,
+    fontSize: 12,
   },
   score: {
     color: 'white',
     fontFamily: 'Orbitron-Medium',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 12,
   }, 
   logo_container: {
     alignItems: 'center',

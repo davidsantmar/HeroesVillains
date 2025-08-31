@@ -1,13 +1,42 @@
 import { View, Text,Image, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { CharacterCard } from './CharacterCard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
+import { Audio } from 'expo-av';
 
 export function FightersAvailable({ fighters }) {
     const router = useRouter();
     const [characterSelected, setCharacterSelected] = useState(false);
     const [selectedFighter, setSelectedFighter] = useState(null);    
+    const [select, setSelect] = useState(null);
+    useEffect(() => {
+      return () => {
+        if (select) {
+          console.log('Liberando select');
+          select.unloadAsync();
+        }
+      };
+    }, [select]);
+    
+    async function playSelect() {
+      console.log('Cargando select');
+      try {
+        // Carga el sonido
+        const { sound } = await Audio.Sound.createAsync(
+          require('../assets/sounds/select.mp3')
+        );
+        
+        // Almacena el sonido en el estado
+        setSelect(sound);
+        console.log('Reproduciendo select');
+        
+        // Reproduce el sonido inmediatamente después de crearlo
+        await sound.playAsync();
+      } catch (error) {
+        console.error('Error al reproducir el sonido:', error);
+      }
+    }
     const onSelectFighter = (fighter) => {
+      playSelect();
       setCharacterSelected(true); 
       setSelectedFighter(fighter);
       router.push({
@@ -62,10 +91,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginTop: 20,
-    padding: 10,
+    padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
   },
   picture: {
     resizeMode: 'cover',
@@ -74,13 +103,13 @@ const styles = StyleSheet.create({
     height: 190,
   },
   fighter_name_container: {
-    width: 160, 
+    width: 150, 
     alignItems: 'center'
   },
   fighter_name: {
     color: 'black',
     fontFamily: 'Orbitron-Medium',
-    fontSize: 18,
+    fontSize: 16,
     marginTop: 5,
   }
 });

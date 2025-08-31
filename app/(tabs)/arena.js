@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { getCharacterOfTheDay } from '../../data/data';
 import { FightersAvailable } from '../../components/FightersAvailable';
 import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
+import { Audio } from 'expo-av';
 
 export default function Arena({charactersLine}) {
   const [chartyped, setChartyped] = useState('');
@@ -22,12 +23,91 @@ export default function Arena({charactersLine}) {
   const [enemyUnknownData, setEnemyUnknownData] = useState(false);
   const [charScore, setCharScore] = useState(0);
   const [enemyScore, setEnemyScore] = useState(0);
+  const [select, setSelect] = useState(null);
+  const [bridgeSound, setBridgeSound] = useState(null);
   const navigation = useNavigation();
   const [loaded, error] = useFonts({
     'Orbitron-Medium': require('../../assets/fonts/Orbitron-Medium.ttf'), 
   });
   const [resultsLength, setResultsLength] = useState('');
   const router = useRouter();
+  useEffect(() => {
+  return () => {
+    if (select) {
+      console.log('Liberando select');
+      select.unloadAsync();
+    }
+  };
+}, [select]);
+useEffect(() => {
+  playBridgeSound();
+}, [])
+useEffect(() => {
+      Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        shouldDuckAndroid: true,
+      });
+  
+      // Liberación de sonidos al desmontar el componente
+      return () => {
+        if (bridgeSound) {
+          console.log("Liberando bridgeSound");
+          bridgeSound.unloadAsync();
+        }
+      };
+    }, [bridgeSound]);
+
+async function playBridgeSound() {
+  console.log('Cargando bridge');
+  try {
+    // Carga el sonido
+    const { sound } = await Audio.Sound.createAsync(
+      require('../../assets/sounds/data_room.mp3')
+    );
+    
+    // Almacena el sonido en el estado
+    setBridgeSound(sound);
+    console.log('Reproduciendo bridge');
+    
+    // Reproduce el sonido inmediatamente después de crearlo
+    await sound.playAsync();
+  } catch (error) {
+    console.error('Error al reproducir el bridge:', error);
+  }
+}
+async function stopBridgeSound() {
+      if (bridgeSound) {
+        console.log('Deteniendo bridgeSound...');
+        try {
+          await bridgeSound.stopAsync();
+          console.log('BridgeSound detenido correctamente');
+        } catch (error) {
+          console.log('Error al detener el bridgeSound:', error);
+        }
+      } else {
+        console.log('No hay bridgeSound cargado para detener');
+      }
+    }
+async function playSelect() {
+  console.log('Cargando select');
+  try {
+    // Carga el sonido
+    const { sound } = await Audio.Sound.createAsync(
+      require('../../assets/sounds/select.mp3')
+    );
+    
+    // Almacena el sonido en el estado
+    setSelect(sound);
+    console.log('Reproduciendo select');
+    
+    // Reproduce el sonido inmediatamente después de crearlo
+    await sound.playAsync();
+  } catch (error) {
+    console.error('Error al reproducir el sonido:', error);
+  }
+}
   
   useFocusEffect(
     useCallback(() => {
@@ -41,7 +121,7 @@ export default function Arena({charactersLine}) {
             style={styles.input}
             value={chartyped}
             onChangeText={(text) => setChartyped(text)}
-            placeholder="Search character..."
+            placeholder="Type"
             placeholderTextColor="black"
           />
         ),
@@ -68,6 +148,8 @@ export default function Arena({charactersLine}) {
 
 
   const onSubmit = async () => {
+    stopBridgeSound();
+    playSelect();
     setNewSearch(true);
     setActiveSearch(true);
     setResultsLength('');
@@ -120,7 +202,7 @@ export default function Arena({charactersLine}) {
 
   return fixedChar; // Return the modified object
 };
-  const showCharacter = (char) => {
+  /*const showCharacter = (char) => {
     setWinChar('');
     setWinEnemy('');
     setCharUnknownData(false);
@@ -131,7 +213,7 @@ export default function Arena({charactersLine}) {
     setCharacterFight(char); // Inicialize character
     setActiveTabId(char.id);  
     loadEnemy();
-  };
+  };*/
   
   const battle = useCallback(() => {
     if (!characterToShow || !enemyToShow) return;
@@ -213,10 +295,12 @@ export default function Arena({charactersLine}) {
         <FightersAvailable fighters={characters} />) 
         : 
         (<View style={styles.logo_container}>
+          <Text style={styles.earth_text}>Choose your character</Text>
             <Image
               style={styles.logo}
-              source={require('../../assets/icon.png')}
+              source={require('../../assets/gifs/aircraft.gif')}
               resizeMode="cover"
+              alt="earth"
             />
           </View>
         )}
@@ -255,9 +339,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 400,
-    height: 450,
-    marginTop: 100,
+    width: 380,
+    height: 590,
+    marginTop: 40,
   },
   input: {
     padding: 5,
@@ -291,4 +375,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontFamily: "Orbitron-Medium",
   },
+  earth_text: {
+    fontSize: 16,
+    color: "white",
+    fontFamily: "Orbitron-Medium",
+    marginTop: 40
+  }
 });

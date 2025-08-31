@@ -68,14 +68,14 @@ export function VersusScore({ character, enemy, loseChar, loseEnemy }) {
 const styles = StyleSheet.create({
   vs_container: {
     flexDirection: 'column',
-    marginTop: 20,
+    marginTop: 10,
   },
   vs_text: {
     alignItems: 'center',
   },
   vs: {
     color: 'red',
-    fontSize: 35,
+    fontSize: 15,
     fontFamily: 'Orbitron-Medium',
   },
   character_name_container: {
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   character_name: {
-    fontSize: 25,
+    fontSize: 15,
     fontFamily: 'Orbitron-Medium',
     color: 'white',
   },

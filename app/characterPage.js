@@ -1,56 +1,125 @@
 import { CharacterCard } from "../components/CharacterCard";
-import { Link, useLocalSearchParams, useRouter} from 'expo-router'
-import { useState } from "react";
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState, useEffect } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { Audio } from "expo-av";
 
 export default function characterPage() {
+  const [bell, setBell] = useState(null);
+  const [draw, setDraw] = useState(null);
   const params = useLocalSearchParams();
   const router = useRouter();
   const { fighter } = params;
   const { fighters } = params;
   const [characters, setCharacters] = useState(fighters);
-    const [character, setCharacter] = useState(fighter);
-    const [select, setSelect] = useState(null);
+  const [character, setCharacter] = useState(fighter);
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: true,
+    });
+
+    // Liberación de sonidos al desmontar el componente
+    return () => {
+      if (bell) {
+        console.log("Liberando bell");
+        bell.unloadAsync();
+      }
+      if (draw) {
+        console.log("Liberando draw");
+        draw.unloadAsync();
+      }
+      
+    };
+  }, [bell, draw]);
+  
+  async function playBell() {
+    console.log("Cargando bell");
+    try {
+      if (bell) {
+        // Si el sonido ya está cargado, reutilízalo
+        console.log("Reproduciendo bell existente");
+        await bell.replayAsync(); // replayAsync reinicia y reproduce el sonido
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/sounds/boxing-bell.mp3")
+      );
+      setBell(sound);
+      console.log("Reproduciendo bell");
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Error al reproducir bell:", error);
+    }
+  }
+
+  // Función para reproducir el sonido 'draw'
+  async function playDraw() {
+    console.log("Cargando draw");
+    try {
+      if (draw) {
+        // Si el sonido ya está cargado, reutilízalo
+        console.log("Reproduciendo draw existente");
+        await draw.replayAsync(); // replayAsync reinicia y reproduce el sonido
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/sounds/draw.mp3")
+      );
+      setDraw(sound);
+      console.log("Reproduciendo draw");
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Error al reproducir draw:", error);
+    }
+  }
+
   // Convertir characters a un arreglo si es una cadena JSON
-   const parsedCharacter = fighter ? JSON.parse(fighter) : null;
-    const toFightersSearched = () => {
-      router.push({
-        pathname: '/fightersSearched',
-        params: { characters: characters}, // Expo Router requiere serialización para parámetros complejos
-      });
-    }
-    const toBattleArena = () => {
-      router.push({
-        pathname: '/battleArena',
-        params: { character: character, fighters: fighters}, 
-      });
-    }
-   
-    return(
-        <>
-        <View style={styles.container}>
-          <View style={styles.buttonsContainer}>
-              <Pressable style={styles.button} onPress={toFightersSearched}>
-                <View style={styles.buttonContent}>
-                    <Text style={styles.buttonText}>Back</Text>
-                </View>
-              </Pressable>
-              <Pressable style={styles.button} onPress={toBattleArena}>
-                <View style={styles.buttonContent}>
-                    <Text style={styles.buttonText}>FIGHT!</Text>
-                </View>
-              </Pressable>
-          </View>
-            <CharacterCard item={parsedCharacter} />
+  const parsedCharacter = fighter ? JSON.parse(fighter) : null;
+  const toFightersSearched = () => {
+    playDraw();
+    router.push({
+      pathname: "/fightersSearched",
+      params: { characters: characters }, // Expo Router requiere serialización para parámetros complejos
+    });
+  };
+ 
+  
+  const toBattleArena = () => {
+    playBell();
+    router.push({
+      pathname: "/battleArena",
+      params: { character: character, fighters: fighters },
+    });
+  };
+  return (
+    <>
+      <View style={styles.container}>
+        <View style={styles.buttonsContainer}>
+          <Pressable style={styles.button} onPress={toFightersSearched}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>Back</Text> 
+            </View>
+          </Pressable>
+          <Pressable style={styles.button} onPress={toBattleArena}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>FIGHT!</Text>
+            </View>
+          </Pressable>
         </View>
-        </>
-    )
+        <CharacterCard item={parsedCharacter} />
+      </View>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
-    padding: 10,
   },
   card_container: {
     justifyContent: "center",
@@ -59,7 +128,8 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 60
+    marginTop: 60,
+    marginBottom: 20
   },
   button: {
     height: 40,

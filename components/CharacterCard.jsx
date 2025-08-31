@@ -74,24 +74,25 @@ export function CharacterCard({ item }) {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    marginBottom: 250
+    alignItems: 'center',
+    marginBottom: 260,
+    justifyContent: 'center'
   },
   card: {
-    width: 400,
-    backgroundColor: "rgba(161, 130, 98, 1)",
-    borderRadius: 10,
-    marginTop: 30,
+    width: 370,
+    backgroundColor: 'rgba(161, 130, 98, 1)',
+    borderRadius: 10,  
+    marginTop: 20
   },
   container_file_name: {
     flexDirection: "row",
     alignItems: "center",
-    height: 45,
+    height: 55,
     width: 400,
     backgroundColor: 'black',
   },
   file_name: {
-    height: 50,
+    height: 60,
     backgroundColor: "#ccc",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   },
   image_container: {
     justifyContent: "flex-start",
-    marginLeft: 230,
+    marginLeft: 210,
     marginTop: -40,
     transform: [{ rotate: "2deg" }],
     zIndex: 20

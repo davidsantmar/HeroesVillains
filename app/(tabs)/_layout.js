@@ -63,14 +63,14 @@ const styles = StyleSheet.create({
   logo: {
     width: 40,
     height: 40,
-    marginLeft: 10,
+    marginLeft: 15,
   },
   logo_text: {
-    fontSize: 18,
+    fontSize: 11,
     fontWeight: 'bold',
     color: 'white',
-    marginRight: 10,
     fontFamily: 'Orbitron-Medium',
+    marginRight: 15
   },
   button: {
     height: 40,
