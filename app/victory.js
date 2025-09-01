@@ -2,7 +2,7 @@ import { View, Text, Image, StyleSheet, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
-import { Audio } from 'expo-audio';
+import { Audio } from 'expo-av';
 
 export default function Victory() {
   const router = useRouter();

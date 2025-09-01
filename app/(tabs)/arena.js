@@ -122,7 +122,7 @@ async function playSelect() {
             value={chartyped}
             onChangeText={(text) => setChartyped(text)}
             placeholder="Type"
-            placeholderTextColor="black"
+            placeholderTextColor="grey"
           />
         ),
         headerRight: () => (

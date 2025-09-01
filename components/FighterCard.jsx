@@ -23,6 +23,10 @@ export function FighterCard({ character, winlose}) {
     }
     return () => clearTimeout(timer);
   }, [winlose]);
+  
+  useEffect(() => {
+    console.log('character', character)
+  }, [character])
   if (!character || !character.powerstats || !character.results) {
     return null;
   }

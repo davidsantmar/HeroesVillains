@@ -57,7 +57,7 @@ async function playAmbient() {
       }
 
       const { sound } = await Audio.Sound.createAsync(
-        require("../assets/sounds/data_room.mp3")
+        require("../assets/sounds/computer_sequence.mp3")
       );
       setAmbient(sound);
       console.log("Reproduciendo ambient");

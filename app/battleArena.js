@@ -23,6 +23,7 @@ export default function BattleArena() {
   const [enemyUnknownData, setEnemyUnknownData] = useState(false);
   const [charScore, setCharScore] = useState(0);
   const [enemyScore, setEnemyScore] = useState(0);
+  const [dataInsuf, setDataInsuf] = useState(null);
   const navigation = useNavigation();
   const [loaded, error] = useFonts({
     'Orbitron-Medium': require('../assets/fonts/Orbitron-Medium.ttf'), 
@@ -32,6 +33,22 @@ export default function BattleArena() {
   const [perfect, setPerfect] = useState(null);
   const [avengers, setAvengers] = useState(null);
   const [lose, setLose] = useState(null);
+  useEffect(() => {
+        Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: false,
+          shouldDuckAndroid: true,
+        });
+    
+        // Liberación de sonidos al desmontar el componente
+        return () => {
+          if (dataInsuf) {
+            console.log("Liberando dataInsuf");
+            dataInsuf.unloadAsync();
+          }
+        };
+      }, [dataInsuf]);
   useEffect(() => {
     if (charScore === 12 && enemyScore === 0){
         router.push({
@@ -56,31 +73,6 @@ export default function BattleArena() {
       setTimeout(battle, 5);
     }
   }, [characterToShow, enemyToShow, battle]);
-  /*useEffect(() => {
-      Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-      });
-  
-      // Liberación de sonidos al desmontar el componente
-      return () => {
-        
-        if (youWin) {
-          console.log("Liberando youWin");
-          youWin.unloadAsync();
-        }
-        if (youLose) {
-          console.log("Liberando youLose");
-          youLose.unloadAsync();
-        }
-        if (lose) {
-          console.log("Liberando lose");
-          lose.unloadAsync();
-        }
-      };
-    }, [youWin, youLose, lose]);*/
  async function playAvengers() {
     console.log("Cargando avengers");
     try {
@@ -152,7 +144,7 @@ export default function BattleArena() {
       }
 
       const { sound } = await Audio.Sound.createAsync(
-        require("../assets/sounds/you-win-perfect.mp3")
+        require("../assets/sounds/youWinGood.mp3")
       );
       setPerfect(sound);
       console.log("Reproduciendo perfect");
@@ -181,39 +173,59 @@ export default function BattleArena() {
         console.error("Error al reproducir lose:", error);
       }
     }
-  const loadEnemy = async () => {
-      try {
-          const result = await getCharacterOfTheDay();
-          setEnemyToShow(fixUnknownStats(result, 'enemy'));
-          setEnemyFight(result); // Inicializ enemyFight
-      } catch (error) {
-      Alert.alert("Error fetching character", error.message);
-      Alert.alert("Error", "Failed to load character");
-      }
-  };    
-  const fixUnknownStats = (char, friendOrFoe) => {
+  async function playDataInsuf() {
+    console.log('Cargando data insuf');
+    try {
+      // Carga el sonido
+      const { sound } = await Audio.Sound.createAsync(
+        require('../assets/sounds/data_insuf.mp3')
+      );
+      
+      // Almacena el sonido en el estado
+      setDataInsuf(sound);
+      console.log('Reproduciendo data insuf');
+      
+      // Reproduce el sonido inmediatamente después de crearlo
+      await sound.playAsync();
+    } catch (error) {
+      console.error('Error al reproducir el data insuf:', error);
+    }
+  }
+  const fixUnknownStats = (char, friendOrFoe) => { 
     // Defensive check for invalid input
     if (!char || !char.powerstats) {
         console.warn('fixUnknownStats: Invalid character or powerstats missing', char);
         return char; 
     }
-    const fixedChar = { ...char, powerstats: { ...char.powerstats } };
+    const fixedChar = { ...char, powerstats: { ...char.powerstats }};
     const stats = ['intelligence', 'strength', 'speed', 'durability', 'power', 'combat'];
     stats.forEach((stat) => {
-    const value = fixedChar.powerstats[stat];
-    if (value === 'unknown' || value === null || value === undefined || isNaN(Number(value))) {
-      fixedChar.powerstats[stat] = Math.floor(Math.random() * 99) + 1;
-      if (friendOrFoe === 'enemy') {
-        setEnemyUnknownData(true);
-      } else {
-        setCharUnknownData(true);
+      const value = fixedChar.powerstats[stat];
+        if (value === 'unknown' || value === null || value === undefined || isNaN(Number(value))) {
+          fixedChar.powerstats[stat] = Math.floor(Math.random() * 99) + 1;
+          playDataInsuf();
+          if (friendOrFoe === 'enemy') {
+            setEnemyUnknownData(true);
+            fixedChar.unknownData === true;
+          } else if (friendOrFoe === 'friend'){
+            setCharUnknownData(true);
+          }
+        } else {
+          fixedChar.powerstats[stat] = Number(value);
+        }
+    });
+    return fixedChar; // Return the modified object
+  };
+  const loadEnemy = async () => {
+      try {
+        const result = await getCharacterOfTheDay();
+        setEnemyToShow(fixUnknownStats(result, 'enemy'));
+        setEnemyFight(enemyToShow);
+      } catch (error) {
+        Alert.alert("Error fetching character", error.message);
+        Alert.alert("Error", "Failed to load character");
       }
-    } else {
-      fixedChar.powerstats[stat] = Number(value);
-    }
-  });
-  return fixedChar; // Return the modified object
-};
+  };    
   const showCharacter = (char) => {
     setWinChar('');
     setWinEnemy('');
@@ -223,6 +235,7 @@ export default function BattleArena() {
     setCharacterFight(char); // Inicialize character
   };
   const newFight = () =>{
+    setEnemyUnknownData(false);
     setEnemyFight(null);
     setEnemyToShow(null);
     loadEnemy();
@@ -273,41 +286,42 @@ export default function BattleArena() {
     const stats = ['intelligence_data', 'strength_data', 'speed_data', 'durability_data', 'power_data', 'combat_data'];
     stats.forEach((stat, index) => {
           setTimeout(() => {
-          const statKey = stat.replace('_data', '');
-          const charValue  = updatedCharacterFight.powerstats[stat][0][statKey];
-          const enemyValue = updatedEnemyFight.powerstats[stat][0][statKey];
-          if (charValue < enemyValue) {
-            updatedCharacterFight.results[stat] = winIcon;
-            updatedEnemyFight.results[stat]     = loseIcon;
-            charPoints += 1;
-          } else if (charValue > enemyValue) {
-            updatedCharacterFight.results[stat] = loseIcon;
-            updatedEnemyFight.results[stat]     = winIcon;
-            enemyPoints += 1;
-          } else {
-            updatedCharacterFight.results[stat] = '';
-            updatedEnemyFight.results[stat]     = '';
-          }
-          // Forzar re-render para que se vea el icono de este stat
-          setCharacterFight({ ...updatedCharacterFight, results: { ...updatedCharacterFight.results } });
-          setEnemyFight({ ...updatedEnemyFight, results: { ...updatedEnemyFight.results } });
-
-          if (index === stats.length - 1) {
-            if (charPoints > enemyPoints){
-              setWinChar('loser');
-              setWinEnemy('winner');
-              setEnemyScore(enemyScorePoints += 1);
-              setTimeout(playYouLose, 1000);
-            } else if (charPoints < enemyPoints){
-              setWinEnemy('loser');
-              setWinChar('winner'); 
-              setCharScore(charScorePoints += 1);
-              setTimeout(playYouWin, 1000);
-            }else{
-              //setTimeout(playDraw, 2000);
+            const statKey = stat.replace('_data', '');
+            const charValue  = updatedCharacterFight.powerstats[stat][0][statKey];
+            const enemyValue = updatedEnemyFight.powerstats[stat][0][statKey];
+            if (charValue < enemyValue) {
+              updatedCharacterFight.results[stat] = winIcon;
+              updatedEnemyFight.results[stat]     = loseIcon;
+              charPoints += 1;
+            } else if (charValue > enemyValue) {
+              updatedCharacterFight.results[stat] = loseIcon;
+              updatedEnemyFight.results[stat]     = winIcon;
+              enemyPoints += 1;
+            } else {
+              updatedCharacterFight.results[stat] = '';
+              updatedEnemyFight.results[stat]     = '';
             }
-          }
-        }, index * 200); 
+            // Forzar re-render para que se vea el icono de este stat
+            setCharacterFight({ ...updatedCharacterFight, results: { ...updatedCharacterFight.results } });
+            setEnemyFight({ ...updatedEnemyFight, results: { ...updatedEnemyFight.results } });
+
+            if (index === stats.length - 1) {
+              if (charPoints > enemyPoints){
+                setWinChar('loser');
+                setWinEnemy('winner');
+                setEnemyScore(enemyScorePoints += 1);
+                setTimeout(playYouLose, 1000);
+              } else if (charPoints < enemyPoints){
+                setWinEnemy('loser');
+                setWinChar('winner'); 
+                setCharScore(charScorePoints += 1);
+                setTimeout(playYouWin, 1000);
+              }else if (charPoints === enemyPoints){
+                setWinEnemy('winner');
+                setWinChar('winner'); 
+              }
+            }
+          }, index * 200); 
       });
     }, [characterToShow, enemyToShow]);
     async function stopAvengers() {
