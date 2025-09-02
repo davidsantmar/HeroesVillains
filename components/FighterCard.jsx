@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, ImageBackground } from 'react-native';
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
@@ -24,9 +24,6 @@ export function FighterCard({ character, winlose}) {
     return () => clearTimeout(timer);
   }, [winlose]);
   
-  useEffect(() => {
-    console.log('character', character)
-  }, [character])
   if (!character || !character.powerstats || !character.results) {
     return null;
   }
@@ -50,8 +47,6 @@ export function FighterCard({ character, winlose}) {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.card}>
-          <View style={styles.image_container}>
-            <View style={styles.picture_border}>
               <FilterImage
                 style={[styles.picture, { filter: `grayscale(${grayscale})` }]}
                 source={{
@@ -63,9 +58,7 @@ export function FighterCard({ character, winlose}) {
                 }}
                 defaultSource={{ uri: 'https://via.placeholder.com/90x110' }}
               />
-            </View>
-          </View>
-          <View style={styles.char_powers}> 
+          <ImageBackground style={styles.char_powers} source={require ('../assets/screen-back.png')}> 
             {character.unknownData ? <Text style={styles.data_title}>Powerstats ❓</Text> : <Text style={styles.data_title}>Powerstats</Text>}
             {renderStat(
               'Intelligence',
@@ -103,7 +96,7 @@ export function FighterCard({ character, winlose}) {
               character.results.combat_data,
               character.powerstats.combat_data[1].animation
             )}
-          </View>
+          </ImageBackground>
         </View>
       </View>
     </ScrollView>
@@ -118,35 +111,26 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: 10,
-    marginTop: 55,
+    marginTop: 20,
     padding: 15,
-  },
-  image_container: {
-    alignItems: 'center',
-  },
-  picture_border: {
-    backgroundColor: 'white',
-    width: 160,
-    height: 190,
-    marginTop: -60,
   },
   picture: {
     resizeMode: 'cover',
-    width: 140,
-    height: 170,
-    marginLeft: 10,
-    marginTop: 10,
+    width: 170,
+    height: 190,
+    borderRadius: 10
   },
   data_title: {
     fontSize: 14,
-    fontWeight: 'bold',
     marginBottom: 10,
     fontFamily: 'Orbitron-Medium',
+    color: 'black'
   },
   info_title: {
     fontFamily: 'Orbitron-Medium',
     fontSize: 12,
     marginBottom: 5,
+    color: 'black'
   },
   info: {
     color: 'black',
@@ -155,10 +139,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   char_powers: {
-    backgroundColor: 'white',
+    backgroundColor: 'black',
+    opacity: 0.65,
     flexDirection: 'column',
     padding: 5,
     borderRadius: 10,
     marginTop: 10,
+    alignItems: 'center',
+    width: 170,
+    overflow: 'hidden', //para que funcione borderRadius en ImageBackground
+    borderRadius: 10
   },
 });

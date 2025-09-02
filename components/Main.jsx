@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Animated, Alert, View, StyleSheet } from "react-native";
+import { Animated, Alert, StyleSheet, ImageBackground } from "react-native";
 import { getCharacterOfTheDay } from "../data/data";
 import { CharacterCard } from "./CharacterCard";
 import { Audio } from 'expo-av';
@@ -67,19 +67,18 @@ async function playAmbient() {
     }
   }
   return (
-    <View style={styles.container}>
+    <ImageBackground style={styles.container} source={require ('../assets/data_handling.png')}>
       {character && (
-        <Animated.View style={{ backgroundColor: "black", opacity: opacityAnim }}>
+        <Animated.View style={{ opacity: opacityAnim }}>
           <CharacterCard item={character}  />
         </Animated.View>
       )}
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'black',
     marginBottom: -180
   },
 });

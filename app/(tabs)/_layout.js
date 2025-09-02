@@ -36,7 +36,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Random file',
           tabBarIcon: ({ color }) => <HomeIcon color={color} />,
           headerLeft: () => (
             <Image

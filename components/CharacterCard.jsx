@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Image, Text, ScrollView, ImageBackground } from "react-native";
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import { useEffect, useState} from "react";
@@ -23,15 +23,8 @@ export function CharacterCard({ item }) {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <View style={styles.card}>
-          <View style={styles.container_file_name}>
-            <View style={styles.file_name}>
-              <Text style={styles.file_name_text}>{character.name || "Unknown"}</Text>
-            </View>
-          </View>
-          <View style={styles.image_container}>
-            <Image style={styles.clip} source={require('../assets/clp.png')} />
-            <View style={styles.picture_border}>
+        <ImageBackground style={styles.card}  source={require ('../assets/screen-back.png')}>
+          <Text style={styles.name_title}>{character.name}</Text>
               <Image
                 style={styles.picture}
                 source={{
@@ -43,10 +36,8 @@ export function CharacterCard({ item }) {
                 }}
                 defaultSource={{ uri: "https://via.placeholder.com/90x110" }}
               />
-            </View>
-          </View>
+        
           <View style={styles.char_data}>
-            <Text style={styles.data_title}>Personal Information</Text>
             <Text style={styles.info_title}>Name:</Text>
             <Text style={styles.short_info}> {character.biography?.["full-name"] || "Unknown"}</Text>
             <Text style={styles.info_title}>Height:<Text style={styles.info}> {character.appearance?.height?.[1] !== "0 cm" ? character.appearance?.height?.[1] || "Unknown" : "Unknown"}</Text></Text>
@@ -66,7 +57,7 @@ export function CharacterCard({ item }) {
               <Text style={styles.info_title}>Combat:<Text style={styles.info}> {character.powerstats?.combat !== "null" ? character.powerstats?.combat || "Unknown" : "Unknown"}</Text></Text>
             </View>
           </View>
-        </View>
+        </ImageBackground>
       </View>
     </ScrollView>
   );
@@ -80,66 +71,32 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 370,
-    backgroundColor: 'rgba(161, 130, 98, 1)',
     borderRadius: 10,  
-    marginTop: 20
-  },
-  container_file_name: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 55,
-    width: 400,
-    backgroundColor: 'black',
-  },
-  file_name: {
-    height: 60,
-    backgroundColor: "#ccc",
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    padding: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 5
-  },
-  file_name_text: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    fontFamily: 'ShadowsIntoLightTwo'
-  },
-  image_container: {
-    justifyContent: "flex-start",
-    marginLeft: 210,
-    marginTop: -40,
-    transform: [{ rotate: "2deg" }],
-    zIndex: 20
-  },
-  picture_border: {
-    backgroundColor: "white",
-    width: 160,
-    height: 190,
-    marginTop: -60,
-  },
-  clip: {
-    zIndex: 2,
-    width: 130,
-    height: 120,
-    marginTop: -10,
-  },
+    marginTop: 40,
+    opacity: 0.85,
+    overflow: 'hidden' //para que funcione borderRadius en ImageBackground
+  }, 
   picture: {
     resizeMode: "cover",
     width: 140,
     height: 170,
-    marginLeft: 10,
-    marginTop: 10,
+    marginLeft: 220,
+    borderRadius: 10  
   },
   char_data: {
     flexDirection: "column",
     padding: 10,
-    marginTop: -200
+    marginTop: -170
   },
-  data_title: {
+  name_title: {
+    fontSize: 30,
+    marginBottom: 10,
+    fontFamily: 'Orbitron-Medium',
+    marginLeft: 10,
+    marginTop: 10
+  },
+   data_title: {
     fontSize: 20,
-    fontWeight: "bold",
     marginBottom: 10,
     fontFamily: 'Orbitron-Medium',
   },
@@ -151,9 +108,9 @@ const styles = StyleSheet.create({
   short_info: {
     color: "black",
     fontSize: 18,
-    fontStyle: "italic",
     marginBottom: 10,
     fontFamily: 'ShadowsIntoLightTwo',
+    width: 200
   },
   info: {
     color: "black",
@@ -168,27 +125,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 10,
   },
-  button: {
-    height: 40,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#2596be",
-    padding: 5,
-    marginRight: 10,
-    marginTop: 10,
-    width: 100,
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  buttonText: {
-    fontSize: 16,
-    color: "white",
-    fontFamily: "Orbitron-Medium",
-  },
+  
   logo: {
     width: 40,
     height: 40,
@@ -196,7 +133,6 @@ const styles = StyleSheet.create({
   },
   logo_text: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: 'white',
     marginRight: 10,
     fontFamily: 'Orbitron-Medium',

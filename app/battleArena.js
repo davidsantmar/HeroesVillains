@@ -1,4 +1,4 @@
-import { View, StyleSheet, Alert, Image, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Alert, Image, Pressable, Text, ImageBackground } from 'react-native';
 import { useCallback, useEffect, useReducer, useState } from 'react';
 import { FighterCard } from '../components/FighterCard';
 import { useFonts } from 'expo-font';
@@ -346,7 +346,9 @@ export default function BattleArena() {
       });
     }
   return (
-    <View style={styles.container}>
+    <ImageBackground style={styles.container}
+                    source={require('../assets/space.png')}
+                    resizeMode="cover">
         {characterToShow && enemyToShow ? (
             <>
              <View style={styles.buttons_container}>
@@ -393,33 +395,24 @@ export default function BattleArena() {
                     </Pressable>
                 </View>
                 <View style={styles.logo_container}>
-                <Image
-                    style={styles.logo}
-                    source={require('../assets/icon.png')}
-                    resizeMode="cover"
-                />
+                  <Image
+                      style={styles.logo}
+                      source={require('../assets/icon.png')}
+                      resizeMode="cover"
+                  />
                 </View>
             </>
           )}
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'black',
+    height: '100%'
   },
   characters_card_container: {
     flexDirection: 'row',
-  },
-  card_container: {
-    padding: 10,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '180',
-    height: '320',
   },
   score_line: {
     flexDirection: 'row',
@@ -432,12 +425,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   score_text: {
-    color: 'white',
+    color: 'black',
     fontFamily: 'Orbitron-Medium',
     fontSize: 12,
   },
   score: {
-    color: 'white',
+    color: 'black',
     fontFamily: 'Orbitron-Medium',
     fontSize: 12,
   }, 
@@ -446,19 +439,9 @@ const styles = StyleSheet.create({
     marginTop: 110
   },
   logo: {
-    width: 400,
+    width: 380,
     height: 450,
-  },
-  input: {
-    padding: 5,
-    marginTop: 40,
-    marginLeft: 10,
-    borderRadius: 5,
-    height: 40,
-    width: 200, // Ajustado para adaptarse al encabezado
-    backgroundColor: "white",
-    fontSize: 16,
-    fontFamily: "Orbitron-Medium",
+    borderRadius: 10
   },
   buttons_container: {
     flexDirection: "row",

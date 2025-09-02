@@ -44,6 +44,7 @@ export function VersusScore({ character, enemy, loseChar, loseEnemy }) {
 
   return (
     <View style={styles.vs_container}>
+      <View style={styles.support_container}>
       <View style={styles.character_name_container}>
         <Animated.Text
           style={[styles.character_name, { transform: [{ translateY: characterTranslateY }] }]}
@@ -61,6 +62,7 @@ export function VersusScore({ character, enemy, loseChar, loseEnemy }) {
           {enemy.name || 'Sin nombre'}
         </Animated.Text>
       </View>
+      </View>
     </View>
   );
 }
@@ -69,17 +71,24 @@ const styles = StyleSheet.create({
   vs_container: {
     flexDirection: 'column',
     marginTop: 10,
+    alignItems: 'center'
+  },
+  support_container: {
+    backgroundColor: 'black',
+    opacity: 0.65,
+    width: '90%',
+    borderRadius: 10,
+    padding: 5
   },
   vs_text: {
     alignItems: 'center',
   },
   vs: {
-    color: 'red',
+    color: 'white',
     fontSize: 15,
     fontFamily: 'Orbitron-Medium',
   },
   character_name_container: {
-    alignItems: 'flex-start',
     marginLeft: 15,
   },
   character_name: {
