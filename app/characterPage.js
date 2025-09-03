@@ -6,7 +6,7 @@ import { Audio } from "expo-av";
 
 export default function characterPage() {
   const [bell, setBell] = useState(null);
-  const [draw, setDraw] = useState(null);
+  const [back, setBack] = useState(null);
   const params = useLocalSearchParams();
   const router = useRouter();
   const { fighter } = params;
@@ -27,13 +27,13 @@ export default function characterPage() {
         console.log("Liberando bell");
         bell.unloadAsync();
       }
-      if (draw) {
-        console.log("Liberando draw");
-        draw.unloadAsync();
+      if (back) {
+        console.log("Liberando back");
+        back.unloadAsync();
       }
       
     };
-  }, [bell, draw]);
+  }, [bell, back]);
   
   async function playBell() {
     console.log("Cargando bell");
@@ -56,32 +56,32 @@ export default function characterPage() {
     }
   }
 
-  // Función para reproducir el sonido 'draw'
-  async function playDraw() {
-    console.log("Cargando draw");
+  // Función para reproducir el sonido 'back'
+  async function playBack() {
+    console.log("Cargando back");
     try {
-      if (draw) {
+      if (back) {
         // Si el sonido ya está cargado, reutilízalo
-        console.log("Reproduciendo draw existente");
-        await draw.replayAsync(); // replayAsync reinicia y reproduce el sonido
+        console.log("Reproduciendo back existente");
+        await back.replayAsync(); // replayAsync reinicia y reproduce el sonido
         return;
       }
 
       const { sound } = await Audio.Sound.createAsync(
-        require("../assets/sounds/draw.mp3")
+        require("../assets/sounds/back.mp3")
       );
-      setDraw(sound);
-      console.log("Reproduciendo draw");
+      setBack(sound);
+      console.log("Reproduciendo back");
       await sound.playAsync();
     } catch (error) {
-      console.error("Error al reproducir draw:", error);
+      console.error("Error al reproducir back:", error);
     }
   }
 
   // Convertir characters a un arreglo si es una cadena JSON
   const parsedCharacter = fighter ? JSON.parse(fighter) : null;
   const toFightersSearched = () => {
-    playDraw();
+    playBack();
     router.push({
       pathname: "/fightersSearched",
       params: { characters: characters }, // Expo Router requiere serialización para parámetros complejos

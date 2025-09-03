@@ -25,7 +25,7 @@ export function VersusScore({ character, enemy, loseChar, loseEnemy }) {
         // Animación para el enemigo
         if (loseEnemy === 'loser') {
           Animated.timing(enemyTranslateY, {
-            toValue: 500, // Mueve el nombre del perdedor hacia abajo
+            toValue: 530, // Mueve el nombre del perdedor hacia abajo
             duration: 1500,
             useNativeDriver: true,
           }).start();

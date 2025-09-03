@@ -1,5 +1,5 @@
 import { Stack, usePathname } from 'expo-router';
-import { View, StyleSheet, Image, Text, StatusBar } from 'react-native';
+import { View, StyleSheet, StatusBar } from 'react-native';
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
 
@@ -32,14 +32,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black'
-  },
-  logo:{
-    width: 50,
-    height: 44  
-  },
-  logo_text: {
-    fontSize: 20,
-    color: 'white',
-    fontFamily: 'Orbitron-Medium'
   }
 });

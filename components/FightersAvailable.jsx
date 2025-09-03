@@ -13,6 +13,7 @@ export function FightersAvailable({ fighters }) {
     const [holo, setHolo] = useState(null);
     const [horizontalView, setHorizontalView] = useState(false); 
     
+    
     useEffect(() => {
       return () => {
         if (select) {
@@ -44,15 +45,12 @@ export function FightersAvailable({ fighters }) {
     useEffect(() => {
       if (fighters.length > 1){
         setHorizontalView(true);
-        console.log(horizontalView)
       }else {
         setHorizontalView(false);
-                console.log(horizontalView)
-
       }
       const timer = setTimeout(() => {
         setFightersMap(fighters); // Actualizamos fightersMap con los datos de fighters después de 6 segundos
-      }, 5800);
+      }, 5350);
       return () => clearTimeout(timer); // Limpiamos el temporizador al desmontar
     }, [fighters]);
 

@@ -1,8 +1,7 @@
-import { Text, View, StyleSheet, TextInput, Pressable, Image, ActivityIndicator, Alert, ImageBackground } from 'react-native';
+import { Text, View, StyleSheet, TextInput, Pressable, ActivityIndicator, ImageBackground, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import { getCharacterByName } from "../../data/data";
 import { useCallback, useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
-import { getCharacterOfTheDay } from '../../data/data';
 import { FightersAvailable } from '../../components/FightersAvailable';
 import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { Audio } from 'expo-av';
@@ -10,19 +9,10 @@ import { Audio } from 'expo-av';
 export default function Arena({charactersLine}) {
   const [chartyped, setChartyped] = useState('');
   const [characters, setCharacters] = useState([]);
-  const [characterToShow, setCharacterToShow] = useState(null);
-  const [activeTabId, setActiveTabId] = useState(null);  
   const [activeSearch, setActiveSearch] = useState(false);
-  const [enemyToShow, setEnemyToShow] = useState(null);
-  const [characterFight, setCharacterFight] = useState(null);
-  const [enemyFight, setEnemyFight] = useState(null);
   const [newSearch, setNewSearch] = useState(false);
-  const [winChar, setWinChar] = useState('');
-  const [winEnemy, setWinEnemy] = useState('');
   const [charUnknownData, setCharUnknownData] = useState(false);
   const [enemyUnknownData, setEnemyUnknownData] = useState(false);
-  const [charScore, setCharScore] = useState(0);
-  const [enemyScore, setEnemyScore] = useState(0);
   const [select, setSelect] = useState(null);
   const [bridgeSound, setBridgeSound] = useState(null);
   const navigation = useNavigation();
@@ -66,11 +56,9 @@ export default function Arena({charactersLine}) {
       const { sound } = await Audio.Sound.createAsync(
         require('../../assets/sounds/data_room.mp3')
       );
-      
       // Almacena el sonido en el estado
       setBridgeSound(sound);
       console.log('Reproduciendo bridge');
-      
       // Reproduce el sonido inmediatamente después de crearlo
       await sound.playAsync();
     } catch (error) {
@@ -111,10 +99,9 @@ export default function Arena({charactersLine}) {
   
   useFocusEffect(
     useCallback(() => {
-          if (charactersLine !== undefined) {
-            setCharacters(charactersLine);
-          } 
-
+      if (charactersLine !== undefined) {
+        setCharacters(charactersLine);
+      } 
       navigation.setOptions({
         headerLeft: () => (
           <TextInput
@@ -142,9 +129,6 @@ export default function Arena({charactersLine}) {
       });
     }, [chartyped, activeSearch, characters, resultsLength, onSubmit]));
 
- 
-
-
   const onSubmit = async () => {
     stopBridgeSound();
     playSelect();
@@ -168,18 +152,22 @@ export default function Arena({charactersLine}) {
   };
   return ( 
     <>
-      <ImageBackground style={styles.container} source={require('../../assets/gifs/aircraft.gif')}
-              resizeMode="cover"
-              alt="earth">
-      {characters.length > 0 ? (
-        <FightersAvailable fighters={characters} />) 
-        : 
-        (<View style={styles.logo_container}>
-          <Text style={styles.earth_text}>Search your character</Text>
-            
-          </View>
-        )}
-      </ImageBackground>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ImageBackground
+          style={styles.container}
+          source={require("../../assets/gifs/aircraft.gif")}
+          resizeMode="cover"
+          alt="earth"
+        >
+          {characters.length > 0 ? (
+            <FightersAvailable fighters={characters} />
+          ) : (
+            <View style={styles.logo_container}>
+              <Text style={styles.earth_text}>Search your character</Text>
+            </View>
+          )}
+        </ImageBackground>
+      </TouchableWithoutFeedback>
     </>
   );
 }
@@ -189,8 +177,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
- 
-  
   logo_container: {
     alignItems: 'center',
   },

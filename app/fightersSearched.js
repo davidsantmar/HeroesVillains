@@ -7,7 +7,7 @@ import { Audio } from "expo-av";
 export default function FightersSearched() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [draw, setDraw] = useState(null);
+  const [back, setBack] = useState(null);
   const [gifSource, setGifSource] = useState(require('../assets/gifs/showFighters.gif'));
   const { characters } = params;
   // Convertir characters a un arreglo si es una cadena JSON
@@ -37,34 +37,34 @@ export default function FightersSearched() {
   
       // Liberación de sonidos al desmontar el componente
       return () => {
-        if (draw) {
-          console.log("Liberando draw");
-          draw.unloadAsync();
+        if (back) {
+          console.log("Liberando back");
+          back.unloadAsync();
         }
       };
-    }, [draw]);
-    async function playDraw() {
-      console.log("Cargando draw");
+    }, [back]);
+    async function playBack() {
+      console.log("Cargando back");
       try {
-        if (draw) {
+        if (back) {
           // Si el sonido ya está cargado, reutilízalo
-          console.log("Reproduciendo draw existente");
-          await draw.replayAsync();
+          console.log("Reproduciendo back existente");
+          await back.replayAsync();
           return;
         }
   
         const { sound } = await Audio.Sound.createAsync(
-          require("../assets/sounds/draw.mp3")
+          require("../assets/sounds/back.mp3")
         );
-        setDraw(sound);
-        console.log("Reproduciendo draw");
+        setBack(sound);
+        console.log("Reproduciendo back");
         await sound.playAsync();
       } catch (error) {
-        console.error("Error al reproducir draw:", error);
+        console.error("Error al reproducir back:", error);
       }
     }
   const toArena = () => {
-    playDraw();
+    playBack();
     router.push({
         pathname: '/arena',
       });
@@ -72,7 +72,7 @@ export default function FightersSearched() {
   return (
     <ImageBackground style={styles.container} source={gifSource}
               resizeMode="cover"
-              alt="earth">
+              alt="show_fighters">
       <View style={styles.buttonsContainer}>
           <Pressable style={styles.button} onPress={toArena}>
             <View style={styles.buttonContent}>

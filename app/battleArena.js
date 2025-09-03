@@ -33,6 +33,9 @@ export default function BattleArena() {
   const [perfect, setPerfect] = useState(null);
   const [avengers, setAvengers] = useState(null);
   const [lose, setLose] = useState(null);
+  const [draw, setDraw] = useState(null);
+  const [evilVictory, setEvilVictory] = useState(null);
+  const [explosion, setExplosion] = useState(null);
   useEffect(() => {
         Audio.setAudioModeAsync({
           allowsRecordingIOS: false,
@@ -47,20 +50,21 @@ export default function BattleArena() {
             console.log("Liberando dataInsuf");
             dataInsuf.unloadAsync();
           }
+          if (evilVictory) {
+            console.log("Liberando evilVictory");
+            evilVictory.unloadAsync();
+          }
+          if (explosion) {
+            console.log("Liberando explosion");
+            explosion.unloadAsync();
+          }
+          if (perfect) {
+            console.log("Liberando perfect");
+            perfect.unloadAsync();
+          }
         };
-      }, [dataInsuf]);
-  useEffect(() => {
-    if (charScore === 12 && enemyScore === 0){
-        router.push({
-          pathname: "/victory",
-          params: { character: JSON.stringify(characterToShow)}
-        })
-        playPerfect();
-    }
-    if (charScore === 1) {
-      playAvengers();
-    }
-  }, [charScore]);
+      }, [dataInsuf, evilVictory, explosion, perfect]);
+  
   useEffect(() => {
     const parsedCharacter = typeof character === "string" ? JSON.parse(character) : character;
     if (parsedCharacter) {
@@ -73,6 +77,89 @@ export default function BattleArena() {
       setTimeout(battle, 5);
     }
   }, [characterToShow, enemyToShow, battle]);
+  useEffect(() => {
+    const parsedCharacter = typeof character === "string" ? JSON.parse(character) : character;
+    console.log(parsedCharacter.biography.alignment)
+    if (charScore === enemyScore + 12 && parsedCharacter.biography.alignment === 'good'){
+        router.push({
+          pathname: "/victory",
+          params: { character: JSON.stringify(characterToShow)}
+        })
+        playPerfect();
+    }
+    if (charScore === enemyScore + 12 && parsedCharacter.biography.alignment === 'bad'){
+        router.push({
+          pathname: "/evilVictory",
+          params: { character: JSON.stringify(characterToShow)}
+        })
+        playExplosion();
+        setTimeout(playEvilVictory, 2000);
+    }
+    if (charScore === 1) {
+      playAvengers();
+    }
+  }, [charScore, enemyScore]);
+  async function playEvilVictory() {
+      console.log("Cargando evilVictory");
+      try {
+        if (evilVictory) {
+          // Si el sonido ya está cargado, reutilízalo
+          console.log("Reproduciendo evilVictory existente");
+          await evilVictory.replayAsync(); // replayAsync reinicia y reproduce el sonido
+          return;
+        }
+  
+        const { sound } = await Audio.Sound.createAsync(
+          require("../assets/sounds/evil_victory.mp3")
+        );
+        setEvilVictory(sound);
+        console.log("Reproduciendo evilVictory");
+        await sound.playAsync();
+      } catch (error) {
+        console.error("Error al reproducir evilVictory:", error);
+      }
+    }
+      
+    async function playExplosion() {
+      console.log("Cargando explosion");
+      try {
+        if (explosion) {
+          // Si el sonido ya está cargado, reutilízalo
+          console.log("Reproduciendo explosion existente");
+          await explosion.replayAsync(); // replayAsync reinicia y reproduce el sonido
+          return;
+        }
+  
+        const { sound } = await Audio.Sound.createAsync(
+          require("../assets/sounds/explosion.mp3")
+        );
+        setExplosion(sound);
+        console.log("Reproduciendo explosion");
+        await sound.playAsync();
+      } catch (error) {
+        console.error("Error al reproducir explosion:", error);
+      }
+    }
+  async function playDraw() {
+    console.log("Cargando draw");
+    try {
+      if (draw) {
+        // Si el sonido ya está cargado, reutilízalo
+        console.log("Reproduciendo draw existente");
+        await draw.replayAsync(); // replayAsync reinicia y reproduce el sonido
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/sounds/draw.mp3")
+      );
+      setDraw(sound);
+      console.log("Reproduciendo draw");
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Error al reproducir draw:", error);
+    }
+  }
  async function playAvengers() {
     console.log("Cargando avengers");
     try {
@@ -319,6 +406,7 @@ export default function BattleArena() {
               }else if (charPoints === enemyPoints){
                 setWinEnemy('winner');
                 setWinChar('winner'); 
+                setTimeout(playDraw, 1000);
               }
             }
           }, index * 200); 
@@ -365,11 +453,11 @@ export default function BattleArena() {
               </View>
               <View style={styles.score_line}>
                 <View style={styles.score_container}>
-                  <Text style={styles.score_text}>Player</Text>
+                  <Text style={styles.score_text}>Fighter</Text>
                   <Text style={styles.score}>{charScore}</Text>
                 </View>
                 <View style={styles.score_container}>
-                  <Text style={styles.score_text}>Computer</Text>
+                  <Text style={styles.score_text}>Enemy</Text>
                   <Text style={styles.score}>{enemyScore}</Text>
                 </View>
               </View>
@@ -439,7 +527,7 @@ const styles = StyleSheet.create({
     marginTop: 110
   },
   logo: {
-    width: 380,
+    width: 370,
     height: 450,
     borderRadius: 10
   },

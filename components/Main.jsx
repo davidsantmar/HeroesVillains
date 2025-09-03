@@ -40,7 +40,7 @@ useEffect(() => {
     if (character) {
       Animated.timing(opacityAnim, {
         toValue: 1, // Animate to opacity 1
-        duration: 1000, // Animation duration in milliseconds (1 second)
+        duration: 2500, // Animation duration in milliseconds (1 second)
         useNativeDriver: true, // Use native driver for better performance
       }).start();
       //playAmbient();

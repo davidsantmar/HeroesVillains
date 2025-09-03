@@ -1,8 +1,7 @@
 import { Tabs } from "expo-router";
 import { BattleIcon, HomeIcon } from "../../components/Icons";
-import { Text, Image, StyleSheet } from "react-native";
+import { Text, Image, StyleSheet, View } from "react-native";
 import { useFonts } from 'expo-font';
-
 
 export default function TabsLayout() {
   const [loaded, error] = useFonts({
@@ -36,8 +35,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Random file',
-          tabBarIcon: ({ color }) => <HomeIcon color={color} />,
+          title: '',
+          tabBarIcon: ({ color }) => <View style={styles.icon_container}><HomeIcon color={color} /></View>,
           headerLeft: () => (
             <Image
               style={styles.logo}
@@ -51,8 +50,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="arena"
         options={{
-          title: 'Search & Battle',
-          tabBarIcon: ({ color }) => <BattleIcon color={color} />,
+          title: '',
+          tabBarIcon: ({ color }) => <View style={styles.icon_container}><BattleIcon color={color} /></View>,
         }}
       />
     </Tabs>
@@ -70,32 +69,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     fontFamily: 'Orbitron-Medium',
-    marginRight: 15
+    marginRight: 20
   },
-  button: {
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#2596be',
-    padding: 5,
-    width: 140,
+  icon_container: {
     marginTop: 20
-  },
-  buttonText: {
-    fontSize: 20,
-    color: 'white',
-    fontFamily: 'Orbitron-Medium',
-    marginLeft: 5,
-  },
-  input: {
-    padding: 5,
-    marginTop: 20,
-    borderRadius: 5,
-    height: 40,
-    width: 240,
-    backgroundColor: 'white',
-    fontSize: 20,
-    fontFamily: 'Orbitron-Medium',
   }
 });

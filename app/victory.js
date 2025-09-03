@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, Alert, Pressable } from 'react-native';
+import { View, Text, Image, StyleSheet, Alert, Pressable, ImageBackground } from 'react-native';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ export default function Victory() {
     'Orbitron-Medium': require('../assets/fonts/Orbitron-Medium.ttf'), 
   });     
   const parsedCharacter = character ? JSON.parse(character) : null;
-  const [draw, setDraw] = useState(null);
+  const [back, setBack] = useState(null);
   useEffect(() => {
       Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -23,40 +23,41 @@ export default function Victory() {
   
       // Liberación de sonidos al desmontar el componente
       return () => {
-        if (draw) {
-          console.log("Liberando draw");
-          draw.unloadAsync();
+        if (back) {
+          console.log("Liberando back");
+          back.unloadAsync();
         }
       };
-    }, [draw]);
-   async function playDraw() {
-      console.log("Cargando draw");
+    }, [back]);
+   async function playBack() {
+      console.log("Cargando back");
       try {
-        if (draw) {
+        if (back) {
           // Si el sonido ya está cargado, reutilízalo
-          console.log("Reproduciendo draw existente");
-          await draw.replayAsync(); // replayAsync reinicia y reproduce el sonido
+          console.log("Reproduciendo back existente");
+          await back.replayAsync(); // replayAsync reinicia y reproduce el sonido
           return;
         }
   
         const { sound } = await Audio.Sound.createAsync(
-          require("../assets/sounds/draw.mp3")
+          require("../assets/sounds/back.mp3")
         );
-        setDraw(sound);
-        console.log("Reproduciendo draw");
+        setBack(sound);
+        console.log("Reproduciendo back");
         await sound.playAsync();
       } catch (error) {
-        console.error("Error al reproducir draw:", error);
+        console.error("Error al reproducir back:", error);
       }
     }
   const toHome = () => {
-    playDraw();
+    playBack();
     router.push({
         pathname: '/',
       });
   }
   return (
-    <View style={styles.victory_container}>
+    <>
+    <ImageBackground style={styles.victory_container} source={require ('../assets/gifs/earth.gif')} resizeMode="cover" alt="earth_saved">
       <View style={styles.buttons_container}>
         <Pressable style={styles.button} onPress={toHome}> 
           <View style={styles.buttonContent}>
@@ -64,32 +65,19 @@ export default function Victory() {
           </View>
         </Pressable>
       </View>
-       <Image
-          style={styles.picture}
-          source={{
-            uri: parsedCharacter.image?.url || "https://via.placeholder.com/90x110",
-          }}
-          onError={(error) => {
-            console.log("Image load error:", error.nativeEvent.error);
-            Alert.alert("Error", "Failed to load character image");
-          }}
-            defaultSource={{ uri: "https://via.placeholder.com/90x110" }}
-        />
           <View style={styles.text_container}>
-            <Text style={styles.victory_text_name}>
-              {parsedCharacter.name}
-            </Text>
+            <View style={styles.text_support}>
+              <Text style={styles.victory_text}>
+                {parsedCharacter.name} saved the world from destruction
+              </Text>
+            </View>
           </View>
-          <View style={styles.victory_container}>
-            <Text style={styles.victory_text}>
-              SAVED THE WORLD FROM DESTRUCTION! 
-            </Text>
-            <Text style={styles.victory_text}>
-               At least, this time...
-            </Text>
+          <View style={styles.subtitle_container}>
+            <Text style={styles.victory_text}>At least, this time............</Text>
           </View>
+        </ImageBackground>
         
-    </View>
+        </>
   );
 }
 
@@ -97,33 +85,23 @@ const styles = StyleSheet.create({
   victory_container: {
     height: '100%',
     alignItems: 'center',
-    backgroundColor: 'black',
-  },
-  picture: {
-    resizeMode: "cover",
-    width: 300,
-    height: 350,
-    marginLeft: 10,
-    marginTop: 110,
-    borderRadius: 10
   },
   text_container:{
-    alignItems: 'center',
-    justifyContent: 'center'
+    marginTop: 450
   },
-  victory_text_name: {
+  text_support: {
+    alignItems: 'center',
+    width: '90%'
+  },
+  victory_text: {
     fontSize: 20,
     color: 'white',
     textShadowColor: 'black',
     marginTop: 20,
     fontFamily: 'Orbitron-Medium',
   },
-  victory_text: {
-    fontSize: 15,
-    color: 'white',
-    textShadowColor: 'black',
-    marginTop: 20,
-    fontFamily: 'Orbitron-Medium',
+  subtitle_container: {
+    marginRight: 20
   },
   buttons_container: {
     flexDirection: "row",
