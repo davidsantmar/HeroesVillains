@@ -1,4 +1,4 @@
-import { View, StyleSheet, Alert, Image, Pressable, Text, ImageBackground } from 'react-native';
+import { View, StyleSheet, Alert, Image, Pressable, Text, ImageBackground, Button } from 'react-native';
 import { useCallback, useEffect, useReducer, useState } from 'react';
 import { FighterCard } from '../components/FighterCard';
 import { useFonts } from 'expo-font';
@@ -426,13 +426,25 @@ export default function BattleArena() {
       }
     }
   const toFightersSearched = () => {
-      stopAvengers();
-      playLose();
-      router.push({
-        pathname: '/fightersSearched',
-        params: { characters: charactersLine}, // Expo Router requiere serialización para parámetros complejos
-      });
-    }
+    stopAvengers();
+    playLose();
+    router.push({
+      pathname: '/fightersSearched',
+      params: { characters: charactersLine}, // Expo Router requiere serialización para parámetros complejos
+    });
+  }
+  const confirm = () => {
+    return(
+      Alert.alert(
+      "You're leaving the battle",
+      "Are you sure?",
+      [
+        { text: "No", style: "cancel" },
+        { text: "Yes", onPress: () => toFightersSearched() }
+      ]
+      )
+    )
+  }
   return (
     <ImageBackground style={styles.container}
                     source={require('../assets/space.png')}
@@ -440,9 +452,9 @@ export default function BattleArena() {
         {characterToShow && enemyToShow ? (
             <>
              <View style={styles.buttons_container}>
-                <Pressable style={styles.button} onPress={toFightersSearched}> 
+                <Pressable style={styles.button} onPress={confirm}> 
                   <View style={styles.buttonContent}>
-                      <Text style={styles.buttonText}>Back</Text>               
+                      <Text style={styles.buttonText}>Backii</Text>               
                   </View>
                 </Pressable>
                 <Pressable style={styles.button}  onPress={()=> newFight()}>
@@ -556,5 +568,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "white",
     fontFamily: "Orbitron-Medium",
-  },
+  }
 });
