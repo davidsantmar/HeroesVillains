@@ -188,9 +188,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fighter_name: {
-    color: 'white',
+    color: 'black',
     fontFamily: 'Orbitron-Medium',
     fontSize: 16,
-    opacity: 0.8
+    opacity: 0.8,
+    marginTop: 10
   }
 });

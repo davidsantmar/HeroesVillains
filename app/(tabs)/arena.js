@@ -32,7 +32,7 @@ export default function Arena({charactersLine}) {
   }, [select]);
   useEffect(() => {
     playBridgeSound();
-    //AsyncStorage.setItem("hasSeenIntro", String("true")); //ya ha visto la intro
+    AsyncStorage.setItem("hasSeenIntro", String("true")); //ya ha visto la intro
   }, [])
   useEffect(() => {
         Audio.setAudioModeAsync({
