@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Animated, Alert, StyleSheet, ImageBackground } from "react-native";
+import { Animated, Alert, StyleSheet, ImageBackground, View, Text } from "react-native";
 import { getCharacterOfTheDay } from "../data/data";
 import { CharacterCard } from "./CharacterCard";
 import { Audio } from 'expo-av';
@@ -67,18 +67,49 @@ async function playAmbient() {
     }
   }
   return (
-    <ImageBackground style={styles.container} source={require ('../assets/data_handling.png')}>
-      {character && (
-        <Animated.View style={{ opacity: opacityAnim }}>
-          <CharacterCard item={character}  />
-        </Animated.View>
-      )}
-    </ImageBackground>
+    <>
+      
+      <ImageBackground style={styles.container} source={require ('../assets/data_handling.png')}>
+        <ImageBackground style={styles.text_background}  source={require ('../assets/screen-back.png')}>
+          <View style={styles.text_container}>
+            <Text style={styles.text}>Random file</Text>
+          </View>
+        </ImageBackground>
+        {character && (
+          <Animated.View style={[styles.card_container, { opacity: opacityAnim }]}>
+            <CharacterCard item={character}  />
+          </Animated.View>
+        )}
+      </ImageBackground>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: -180
+    alignItems: 'center',
+    justifyContent: 'center'
   },
+  text_background: {
+    width: 370,
+    borderRadius: 10,  
+    marginTop: 90,
+    opacity: 0.85,
+    overflow: 'hidden', //para que funcione borderRadius en ImageBackground
+    marginBottom: 10
+  },
+  text_container: {
+    alignItems: 'center'
+  },
+  text: {
+    fontSize: 30,
+    marginBottom: 10,
+    fontFamily: 'Orbitron-Medium',
+    marginLeft: 10,
+    marginTop: 10
+  },
+  card_container: {
+    overflow: 'hidden'
+  }
+  
 });

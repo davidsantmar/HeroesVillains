@@ -454,7 +454,7 @@ export default function BattleArena() {
              <View style={styles.buttons_container}>
                 <Pressable style={styles.button} onPress={confirm}> 
                   <View style={styles.buttonContent}>
-                      <Text style={styles.buttonText}>Backii</Text>               
+                      <Text style={styles.buttonText}>Back</Text>               
                   </View>
                 </Pressable>
                 <Pressable style={styles.button}  onPress={()=> newFight()}>

@@ -3,11 +3,15 @@ import { View, StyleSheet, StatusBar } from 'react-native';
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
 
+
 export default function Layout () {
   const pathname = usePathname();
   const [loaded, error] = useFonts({  //to load and use font
     'Orbitron-Medium': require('../assets/fonts/Orbitron-Medium.ttf'), 
   });
+  // Set the animation options. This is optional.
+
+
   useEffect(() => { //hack to make StatusBar light
     setTimeout(() => {
       StatusBar.setBarStyle('light-content');

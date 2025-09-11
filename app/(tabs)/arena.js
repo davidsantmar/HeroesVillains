@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { FightersAvailable } from '../../components/FightersAvailable';
 import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { Audio } from 'expo-av';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Arena({charactersLine}) {
   const [chartyped, setChartyped] = useState('');
@@ -31,6 +32,7 @@ export default function Arena({charactersLine}) {
   }, [select]);
   useEffect(() => {
     playBridgeSound();
+    //AsyncStorage.setItem("hasSeenIntro", String("true")); //ya ha visto la intro
   }, [])
   useEffect(() => {
         Audio.setAudioModeAsync({
